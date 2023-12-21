@@ -45,6 +45,7 @@ const Month = () => {
   useEffect(() => {
     const nowDate = dayjs(new Date()).format("YYYY-MM");
     console.log(nowDate);
+    onConfirm(nowDate);
     // 边界值控制
     if (monthGroup.length > 0) {
       setMonthList(monthGroup[nowDate]);
@@ -124,6 +125,7 @@ const Month = () => {
             max={new Date()}
           />
         </div>
+  
         {/* 单日列表统计 */}
         {dayGroup.keys.map((key) => {
           return (
@@ -134,6 +136,7 @@ const Month = () => {
             />
           );
         })}
+
       </div>
     </div>
   );

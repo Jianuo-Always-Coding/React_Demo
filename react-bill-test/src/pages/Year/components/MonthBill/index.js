@@ -3,8 +3,9 @@ import "./index.scss";
 import { useMemo, useState } from "react";
 import { billTypeToName } from "@/contants/index";
 import Icon from "@/components/Icon";
+import dayjs from "dayjs";
 
-const DailyBill = ({ date, billList }) => {
+const MonthBill = ({ date, billList }) => {
   const dayResult = useMemo(() => {
     if (!billList) {
       // handle the case where currentMonthList is undefined
@@ -58,10 +59,14 @@ const DailyBill = ({ date, billList }) => {
           return (
             <div className="bill" key={item.id}>
               {/* 图标 */}
-              <Icon type={item.useFor}/>
+              <Icon type={item.useFor} />
               <div className="detail">
                 <div className="billType">{billTypeToName[item.useFor]}</div>
+                <div className="date">
+                  {dayjs(item.date).format("YYYY-MM-DD")}
+                </div>
               </div>
+
               <div className={classNames("money", item.type)}>
                 {item.money.toFixed(2)}
               </div>
@@ -72,4 +77,4 @@ const DailyBill = ({ date, billList }) => {
     </div>
   );
 };
-export default DailyBill;
+export default MonthBill;

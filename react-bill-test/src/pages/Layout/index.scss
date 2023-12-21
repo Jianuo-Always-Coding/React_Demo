@@ -1,13 +1,20 @@
 .layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Make sure the layout takes at least the full viewport height */
+
   .container {
-    position: fixed;
-    top: 0;
-    bottom: 50px;
-    width: 100%;
+    flex-grow: 1; /* Allow the container to grow to fill the available space */
   }
+
   .footer {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
+    position: fixed; /* Fix the footer position */
+    bottom: 0; /* Place the footer at the bottom of the viewport */
+    left: 0;
+    width: 100%; /* Make the footer full width */
+    background-color: #fff; /* Set the background color */
+    z-index: 1000; /* Set a high z-index to ensure the footer is on top */
+
+    
   }
 }

@@ -3,19 +3,24 @@ import axios from "axios";
 
 // 账单列表相关store
 const billStore = createSlice({
-  name: 'bill',
+  name: "bill",
   initialState: {
     billList: [],
   },
   reducers: {
+    // 同步修改方法
     setBillList(state, action) {
       state.billList = action.payload;
+    },
+    //同步添加账单方法
+    addBill(state, action) {
+      state.billList.push(action.payload);
     },
   },
 });
 
 // 解构actionCreater
-const { setBillList } = billStore.actions;
+const { setBillList, addBill } = billStore.actions;
 
 // 编写异步
 const getBillList = () => {
@@ -27,7 +32,17 @@ const getBillList = () => {
     dispatch(setBillList(res.data));
   };
 };
-export { getBillList };
+
+const addBillList = (data) => {
+  return async (dispatch) => {
+    const res = await axios.post("http://localhost:8888/ka", data);
+
+    // 调用dispatch函数提交action
+    dispatch(addBill(res.data));
+  };
+}
+
+export { getBillList, addBillList };
 
 // 导出reducer
 const reducer = billStore.reducer;

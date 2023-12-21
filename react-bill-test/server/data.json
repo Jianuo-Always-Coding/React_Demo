@@ -97,6 +97,94 @@
       "date": "2023-02-28T16:00:00.000Z",
       "useFor": "salary",
       "id": 21
+    },
+    {
+      "type": "pay",
+      "money": -88,
+      "date": "2023-12-21T06:15:50.074Z",
+      "useFor": "food",
+      "id": 22
+    },
+    {
+      "type": "pay",
+      "money": -100,
+      "date": "2023-12-21T06:16:24.552Z",
+      "useFor": "drinks",
+      "id": 23
+    },
+    {
+      "type": "pay",
+      "money": -90,
+      "date": "2023-12-21T06:17:14.594Z",
+      "useFor": "dessert",
+      "id": 24
+    },
+    {
+      "type": "pay",
+      "money": -1,
+      "date": "2023-12-21T06:19:38.334Z",
+      "useFor": "longdistance",
+      "id": 25
+    },
+    {
+      "type": "pay",
+      "money": 0,
+      "date": "2023-12-19T05:00:00.000Z",
+      "useFor": "dessert",
+      "id": 26
+    },
+    {
+      "type": "pay",
+      "money": -20,
+      "date": "2023-12-18T05:00:00.000Z",
+      "useFor": "dessert",
+      "id": 27
+    },
+    {
+      "type": "pay",
+      "money": -99,
+      "date": "2023-12-14T05:00:00.000Z",
+      "useFor": "dessert",
+      "id": 28
+    },
+    {
+      "type": "pay",
+      "money": -1000,
+      "date": "2023-12-21T05:00:00.000Z",
+      "useFor": "dessert",
+      "id": 31
+    },
+    {
+      "type": "pay",
+      "money": -70,
+      "date": "2023-12-09T05:00:00.000Z",
+      "useFor": "taxi",
+      "id": 32
+    },
+    {
+      "type": "income",
+      "money": 1000,
+      "date": "2023-12-21T05:00:00.000Z",
+      "useFor": "overtimepay",
+      "id": 33
+    },
+    {
+      "type": "pay",
+      "money": -10,
+      "useFor": "taxi",
+      "id": 34
+    },
+    {
+      "type": "pay",
+      "money": -1,
+      "useFor": "dessert",
+      "id": 35
+    },
+    {
+      "type": "pay",
+      "money": -30,
+      "useFor": "bodybuilding",
+      "id": 36
     }
   ]
 }
