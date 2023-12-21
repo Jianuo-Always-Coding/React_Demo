@@ -1,15 +1,17 @@
 import { NavBar, DatePicker } from "antd-mobile";
 import "./index.scss";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import classNames from "classnames";
 import dayjs from "dayjs";
 import { useSelector } from "react-redux";
 import _ from "lodash";
+import DailyBill from "./components/DayBill";
 
 const Month = () => {
   // 控制弹窗的显示和关闭
   const [dateVisible, setDateVisible] = useState(false);
   const [currentMonthList, setMonthList] = useState([]);
+  // const [currentDayList, setDayList] = useState([]);
 
   // 按月做数据的分组
   const billList = useSelector((state) => state.bill.billList);
@@ -21,6 +23,10 @@ const Month = () => {
   // console.log(monthGroup);
 
   const monthResult = useMemo(() => {
+    if (!currentMonthList) {
+      // handle the case where currentMonthList is undefined
+      return { pay: 0, income: 0, total: 0 };
+    }
     //支出， 收入， 结余
     const pay = currentMonthList
       .filter((item) => item.type === "pay")
@@ -35,6 +41,16 @@ const Month = () => {
     };
   }, [currentMonthList]);
 
+  // 初始化的时候将当前页面的统计数据显示出来
+  useEffect(() => {
+    const nowDate = dayjs(new Date()).format("YYYY-MM");
+    console.log(nowDate);
+    // 边界值控制
+    if (monthGroup.length > 0) {
+      setMonthList(monthGroup[nowDate]);
+    }
+  }, [monthGroup]);
+
   // 确认回调
   const onConfirm = (date) => {
     setDateVisible(false);
@@ -42,11 +58,26 @@ const Month = () => {
     const formatDate = dayjs(date).format("YYYY-MM");
     setCurrentDate(formatDate);
     setMonthList(monthGroup[formatDate]);
-    console.log(currentMonthList);
+    // console.log(currentMonthList);
   };
   const [currentDate, setCurrentDate] = useState(() => {
     return dayjs(new Date()).format("YYYY-MM");
   });
+
+  // 当前月按照日来分组
+  // 按日分组
+  const dayGroup = useMemo(() => {
+    // return 出去计算后的值
+    const groupData = _.groupBy(currentMonthList, (item) =>
+      dayjs(item.date).format("YYYY-MM-DD")
+    );
+    const keys = Object.keys(groupData);
+    return {
+      groupData,
+      keys,
+    };
+  }, [currentMonthList]);
+  console.log(dayGroup);
 
   return (
     <div className="monthlyBill">
@@ -93,6 +124,16 @@ const Month = () => {
             max={new Date()}
           />
         </div>
+        {/* 单日列表统计 */}
+        {dayGroup.keys.map((key) => {
+          return (
+            <DailyBill
+              key={key}
+              date={key}
+              billList={dayGroup.groupData[key]}
+            />
+          );
+        })}
       </div>
     </div>
   );
