@@ -2,6 +2,19 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Add packages
+```java
+npm install sass -D // 安装sass
+npm install antd --save // 安装ant design
+npm install react-router-dom // 安装路由包 react-router-dom
+npm i @craco/craco -D
+```
+
+1. add 'craco.config.js' under the root path
+2. change the script in 'package.json'
+
+
+
 ## Available Scripts
 
 In the project directory, you can run:
