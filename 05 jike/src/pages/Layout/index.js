@@ -1,7 +1,12 @@
-const Layout = () => {
-    return (
-        <div>This is LayOut page</div>
-    )
-}
+// 测试token是否成功注入
+import { request } from "@/utils";
+import { useEffect } from "react";
 
-export default Layout
+const Layout = () => {
+  useEffect(() => {
+    request.get("/user/profile");
+  }, []);
+  return <div>This is LayOut page</div>;
+};
+
+export default Layout;
