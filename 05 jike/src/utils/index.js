@@ -1,2 +1,3 @@
 import { request } from "./request";
-export { request };
+import { setToken, getToken, clearToken } from "./token";
+export { request, setToken, getToken, clearToken };
