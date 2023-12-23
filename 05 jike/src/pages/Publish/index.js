@@ -11,14 +11,13 @@ import {
   message,
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import { Link, useNavigate, useNavigation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./index.scss";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { useEffect, useState } from "react";
-import { createArticleAPI, getChannelAPI } from "@/apis/article";
-import { useDispatch } from "react-redux";
-import { info } from "sass";
+import { useState } from "react";
+import { createArticleAPI } from "@/apis/article";
+import { useChannel } from "@/hooks/useChannels";
 
 const { Option } = Select;
 
@@ -26,17 +25,7 @@ const Publish = () => {
   const navigate = useNavigate()
 
   // 获取频道列表
-  const [channelList, setChannelList] = useState([]);
-  useEffect(() => {
-    // 1. 封装函数 在函数体内调用接口
-    const getChannelList = async () => {
-      const res = await getChannelAPI();
-      setChannelList(res.data.channels);
-    };
-
-    // 2. 调用函数
-    getChannelList();
-  }, []);
+  const {channelList} = useChannel()
 
   // 获取表单数据
   const onFinish = (formValue) => {
