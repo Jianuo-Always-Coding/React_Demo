@@ -16,7 +16,11 @@ import "./index.scss";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { useEffect, useState } from "react";
-import { createArticleAPI, getArticleById } from "@/apis/article";
+import {
+  createArticleAPI,
+  getArticleById,
+  updateArticleAPI,
+} from "@/apis/article";
 import { useChannel } from "@/hooks/useChannel";
 
 const { Option } = Select;
@@ -40,14 +44,27 @@ const Publish = () => {
       content,
       cover: {
         type: imageType,
-        images: imageList.map((item) => item.response.data.url),
+        images: imageList.map((item) => {
+          if (item.response) {
+            return item.response.data.url;
+          } else {
+            return item.url;
+          }
+        }),
       },
       channel_id,
     };
     // 2. 调用接口提交
-    createArticleAPI(reqData);
-    message.success("发布文章成功");
-    navigate("/article");
+    // 处理调用不同接口
+    if (articleId) {
+      updateArticleAPI({...reqData, id: articleId});
+      message.success("编辑成功");
+      navigate("/article");
+    } else {
+      createArticleAPI(reqData);
+      message.success("发布文章成功");
+      navigate("/article");
+    }
   };
 
   // 上传回调
@@ -74,7 +91,7 @@ const Publish = () => {
     async function getArticleDetail() {
       const res = await getArticleById(articleId);
       const data = res.data;
-      const {cover} = data
+      const { cover } = data;
 
       form.setFieldsValue({
         ...data,
@@ -107,7 +124,7 @@ const Publish = () => {
           <Breadcrumb
             items={[
               { title: <Link to={"/"}>首页</Link> },
-              { title: "发布文章" },
+              { title: `${articleId ? "编辑文章" : "发布文章"}` },
             ]}
           />
         }
