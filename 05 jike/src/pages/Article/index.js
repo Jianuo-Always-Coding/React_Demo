@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Card,
   Breadcrumb,
@@ -7,27 +7,31 @@ import {
   Radio,
   DatePicker,
   Select,
+  Popconfirm,
 } from "antd";
+// 引入汉化包 时间选择器显示中文
 import locale from "antd/es/date-picker/locale/zh_CN";
+
 // 导入资源
-import { Table, Tag, Space } from 'antd'
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
-import img404 from '@/assets/error.png'
-import { useChannel } from "@/hooks/useChannels";
+import { Table, Tag, Space } from "antd";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import img404 from "@/assets/error.png";
+import { useChannel } from "@/hooks/useChannel";
 import { useEffect, useState } from "react";
-import { getArticleListAPI } from "@/apis/article";
+import { delArticleAPI, getArticleListAPI } from "@/apis/article";
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 
 const Article = () => {
+  const navigate = useNavigate();
   const { channelList } = useChannel();
-
+  // 准备列数据
+  // 定义状态枚举
   const status = {
     1: <Tag color="warning">待审核</Tag>,
     2: <Tag color="success">审核通过</Tag>,
   };
-  // 准备列数据
   const columns = [
     {
       title: "封面",
@@ -47,10 +51,10 @@ const Article = () => {
     {
       title: "状态",
       dataIndex: "status",
-      // render: data => console.log(data)
-      render: (data) => {
-        return status[data];
-      },
+      // data - 后端返回的状态status 根据它做条件渲染
+      // data === 1 => 待审核
+      // data === 2 => 审核通过
+      render: (data) => status[data],
     },
     {
       title: "发布时间",
@@ -73,24 +77,34 @@ const Article = () => {
       render: (data) => {
         return (
           <Space size="middle">
-            <Button type="primary" shape="circle" icon={<EditOutlined />} />
             <Button
               type="primary"
-              danger
               shape="circle"
-              icon={<DeleteOutlined />}
+              icon={<EditOutlined />}
+              onClick={() => navigate(`/publish?id=${data.id}`)}
             />
+            <Popconfirm
+              title="删除文章"
+              description="确认要删除当前文章吗?"
+              onConfirm={() => onConfirm(data)}
+              okText="Yes"
+              cancelText="No"
+            >
+              <Button
+                type="primary"
+                danger
+                shape="circle"
+                icon={<DeleteOutlined />}
+              />
+            </Popconfirm>
           </Space>
         );
       },
     },
   ];
 
-  // 获取文章列表
-  const [list, setList] = useState([]);
-  const [count, setCount] = useState(0);
-
-  // 筛选文章列表
+  // 筛选功能
+  // 1. 准备参数
   const [reqData, setReqData] = useState({
     status: "",
     channel_id: "",
@@ -100,21 +114,22 @@ const Article = () => {
     per_page: 4,
   });
 
+  // 获取文章列表
+  const [list, setList] = useState([]);
+  const [count, setCount] = useState(0);
   useEffect(() => {
     async function getList() {
       const res = await getArticleListAPI(reqData);
       setList(res.data.results);
-      if (!res.data.results) {
-        setCount(0);
-      } else {
-        setCount(res.data.results.length);
-      }
+      setCount(res.data.total_count);
     }
     getList();
   }, [reqData]);
 
+  // 2. 获取筛选数据
   const onFinish = (formValue) => {
-    // 把表单收集到的数据加入参数中（不可变的方式）
+    console.log(formValue);
+    // 3. 把表单收集到数据放到参数中(不可变的方式)
     setReqData({
       ...reqData,
       channel_id: formValue.channel_id,
@@ -122,8 +137,27 @@ const Article = () => {
       begin_pubdate: formValue.date[0].format("YYYY-MM-DD"),
       end_pubdate: formValue.date[1].format("YYYY-MM-DD"),
     });
-    // 4. 重新拉取文章列表 + 渲染table逻辑重复的 + 复用
+    // 4. 重新拉取文章列表 + 渲染table逻辑重复的 - 复用
     // reqData依赖项发生变化 重复执行副作用函数
+  };
+
+  // 分页
+  const onPageChange = (page) => {
+    console.log(page);
+    // 修改参数依赖项 引发数据的重新获取列表渲染
+    setReqData({
+      ...reqData,
+      page,
+    });
+  };
+
+  // 删除
+  const onConfirm = async (data) => {
+    console.log("删除点击了", data);
+    await delArticleAPI(data.id);
+    setReqData({
+      ...reqData,
+    });
   };
 
   return (
@@ -143,17 +177,13 @@ const Article = () => {
           <Form.Item label="状态" name="status">
             <Radio.Group>
               <Radio value={""}>全部</Radio>
-              <Radio value={0}>草稿</Radio>
+              <Radio value={1}>待审核</Radio>
               <Radio value={2}>审核通过</Radio>
             </Radio.Group>
           </Form.Item>
 
           <Form.Item label="频道" name="channel_id">
-            <Select
-              placeholder="请选择文章频道"
-              defaultValue="推荐"
-              style={{ width: 120 }}
-            >
+            <Select placeholder="请选择文章频道" style={{ width: 120 }}>
               {channelList.map((item) => (
                 <Option key={item.id} value={item.id}>
                   {item.name}
@@ -176,7 +206,16 @@ const Article = () => {
       </Card>
       {/* 表格区域 */}
       <Card title={`根据筛选条件共查询到 ${count} 条结果：`}>
-        <Table rowKey="id" columns={columns} dataSource={list} />
+        <Table
+          rowKey="id"
+          columns={columns}
+          dataSource={list}
+          pagination={{
+            total: count,
+            pageSize: reqData.per_page,
+            onChange: onPageChange,
+          }}
+        />
       </Card>
     </div>
   );
