@@ -92,6 +92,7 @@ const Publish = () => {
       const res = await getArticleById(articleId);
       const data = res.data;
       const { cover } = data;
+      // console.log(cover);
 
       form.setFieldsValue({
         ...data,
